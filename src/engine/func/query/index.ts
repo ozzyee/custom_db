@@ -2,9 +2,42 @@ import fs from "fs/promises";
 import { getSchema } from "../../../storage/schema";
 import { Column } from "../table/table";
 import { convertTextToType } from "../../helper/convert-text-to-type";
-import { insertIntoTable } from "../../../storage/table";
+import { getTableContent, insertIntoTable } from "../../../storage/table";
 
 export class Query {
+  async select(sqlStatment: string) {
+    const match = sqlStatment.match(
+      /SELECT (\*|\w+) FROM (\w+) (WHERE (\w+) = (\w+))?/
+    );
+
+    if (!match) {
+      throw new Error("Invalid SQL statement!");
+    }
+
+    const tableName = match[2];
+    const selectedColumns = match[1];
+    const tableSchema = await getSchema({
+      tableName,
+    });
+
+    if (!tableSchema) {
+      throw new Error("Table does not exist!");
+    }
+
+    const whereClause = match[3] ? match[3] : null;
+    const whereValue = match[4] ? match[4] : null;
+
+    if (whereClause && whereValue) {
+      const tableContent = await getTableContent(tableName);
+      const filteredContent = tableContent.filter((row: any) => {
+        return row[whereClause] === whereValue;
+      });
+      return filteredContent;
+    }
+
+    return await getTableContent(tableName);
+  }
+
   async insert(sqlStatment: string) {
     const match = sqlStatment.match(
       /INSERT INTO (\w+) \((.*)\) VALUES \((.*)\)/
