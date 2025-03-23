@@ -1,6 +1,6 @@
 {
-  "ignore": ["storage/*", "dist/*"],
-  "watch": ["src"],
+  "ignore": ["./storage/*", "./dist/*"],
+  "watch": ["./src/**/*"],
   "ext": ".ts,.js",
   "exec": "node dist/index.js"
 }

@@ -5,6 +5,7 @@ import { Query } from "./engine/func/query";
   const table = new Table();
   const query = new Query();
 
-  const result = await query.select("SELECT * FROM todos WHERE id = 1");
-  console.log(result);
+  await query.delete(
+    "DELETE FROM todos WHERE id = 10 and title conteins 'groceries'"
+  );
 })();
